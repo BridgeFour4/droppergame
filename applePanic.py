@@ -20,17 +20,22 @@ class Squirrel(games.Sprite):
     def __init__(self, y=60, speed=5, odds_change=100):
         super(Squirrel, self).__init__(image=Squirrel.image,
                                        x=games.screen.width/2,
-                                       y=y,
-                                       dx=speed)
+                                       y=y)
         self.odds_change = odds_change
         self.time_til_drop = 0
+        self.start_pause = 360
+        self.speed =speed
 
     def update(self):
-        if self.right > games.screen.width-30 or self.left < 30:
-            self.dx = -self.dx
-        elif random.randrange(self.odds_change) == 0:
-            self.dx = -self.dx
-        self.check_drop()
+        self.start_pause-=1
+        if self.start_pause <= 0:
+            if self.dx == 0:
+                self.dx = self.speed
+            if self.right > games.screen.width-30 or self.left < 30:
+                self.dx = -self.dx
+            elif random.randrange(self.odds_change) == 0:
+                self.dx = -self.dx
+            self.check_drop()
 
     def check_drop(self):
         if self.time_til_drop > 0:
@@ -112,6 +117,8 @@ class LivesText(games.Text):
 # main
 def main():
     # load Data
+
+
     bg_image = games.load_image("images/tree.png", transparent=False)
 
     # create objects
@@ -119,6 +126,12 @@ def main():
     squirrel = Squirrel()
     score = ScText(value=SCORE, is_collideable=False, size=60, color=color.blue, x=550, y=30)
     lives = LivesText(value=lives_text, is_collideable=False, size=60, color=color.red, x=80, y=30)
+    start1 = games.Message(value="Apple Panic",x= games.screen.width/2,
+                           y=games.screen.height/3, size=60,color = color.black,
+                           lifetime = 360, is_collideable = False)
+    start2 = games.Message(value="Use the mouse to grab the apples the squirrel is throwing at you", x=games.screen.width / 2,
+                           y=games.screen.height *2 / 3, size=22, color=color.black,
+                           lifetime=360, is_collideable=False)
 
     # draw
     games.screen.background = bg_image
@@ -126,6 +139,8 @@ def main():
     games.screen.add(squirrel)
     games.screen.add(score)
     games.screen.add(lives)
+    games.screen.add(start1)
+    games.screen.add(start2)
 
     # game setup
     games.mouse.is_visible = False
